@@ -1,7 +1,7 @@
 import { MikroORM } from "@mikro-orm/core";
 
 // Constants
-import { __prod___ } from "./constants";
+import { COOKIES_NAME, __prod___ } from "./constants";
 
 // Micro Config
 import microConfig from "./mikro-orm.config";
@@ -13,6 +13,7 @@ import { buildSchema } from "type-graphql";
 import { HelloResolver } from "./resolvers/hello";
 import { PostResolver } from "./resolvers/post";
 import { UserResolver } from "./resolvers/user";
+import cors from "cors";
 
 // redis@v4
 import session from "express-session";
@@ -31,8 +32,15 @@ const main = async () => {
   redisClient.connect().catch(console.error);
 
   app.use(
+    cors({
+      credentials: true,
+      origin: ["https://studio.apollographql.com", "http://localhost:3000"],
+    })
+  );
+
+  app.use(
     session({
-      name: "qid",
+      name: COOKIES_NAME,
       store: new RedisStore({
         client: redisClient,
         // disableTouch: true,
@@ -45,9 +53,8 @@ const main = async () => {
       cookie: {
         maxAge: 1000 * 60 * 60 * 24 * 365 * 10, // 10 years
         httpOnly: true, // cookie won't be accessible by Javascript on the front end
-        // secure: __prod___, // cookie only works in https
-        secure: true,
-        sameSite: "none", // csrf
+        secure: __prod___, // cookie only works in https or manually disable when using apollo studio
+        sameSite: "lax", // csrf
       },
     })
   );
@@ -65,7 +72,7 @@ const main = async () => {
   await apolloServer.start();
   apolloServer.applyMiddleware({
     app,
-    cors: { credentials: true, origin: "https://studio.apollographql.com" },
+    cors: false,
   });
 
   app.listen(4000, () => {

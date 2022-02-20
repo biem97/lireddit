@@ -11,7 +11,7 @@ import {
   Resolver,
 } from "type-graphql";
 import argon2 from "argon2";
-import { emit } from "process";
+import { COOKIES_NAME } from "../constants";
 
 @InputType()
 class UsernamePasswordInput {
@@ -44,7 +44,6 @@ class UserResponse {
 export class UserResolver {
   @Query(() => User, { nullable: true })
   async me(@Ctx() { req, em }: MyContext) {
-    console.log("session: ", req.session);
     // you are not logged in
     if (!req.session.userId) {
       return null;
@@ -58,7 +57,7 @@ export class UserResolver {
   @Mutation(() => UserResponse)
   async register(
     @Arg("options") options: UsernamePasswordInput,
-    @Ctx() { em }: MyContext
+    @Ctx() { em, req }: MyContext
   ): Promise<UserResponse> {
     if (options.username.length <= 2) {
       return {
@@ -103,6 +102,12 @@ export class UserResolver {
         };
       }
     }
+
+    // Store user id session
+    // this will set a cookie on the user
+    // keep them logged in
+    req.session.userId = user.id;
+
     return { user };
   }
 
@@ -142,5 +147,21 @@ export class UserResolver {
     req.session.userId = user.id;
 
     return { user };
+  }
+
+  @Mutation(() => Boolean)
+  logout(@Ctx() { req, res }: MyContext) {
+    return new Promise((resolve) => {
+      req.session.destroy((err) => {
+        if (err) {
+          console.log("err:", err);
+          resolve(false);
+          return;
+        }
+      });
+
+      res.clearCookie(COOKIES_NAME);
+      resolve(true);
+    });
   }
 }
