@@ -16,7 +16,7 @@ const Register = () => {
   return (
     <Container mx="auto" py="28">
       <Formik
-        initialValues={{ username: "", password: "" }}
+        initialValues={{ username: "", email: "", password: "" }}
         onSubmit={async (value, { setErrors }) => {
           const response = await register({
             options: value,
@@ -27,7 +27,6 @@ const Register = () => {
             // successfully register
             router.push("/");
           }
-          console.log("response: ", response);
         }}
       >
         {() => (
@@ -38,6 +37,7 @@ const Register = () => {
                 placeholder="username"
                 label="Username"
               />
+              <InputField name="email" placeholder="Email" label="Email" />
               <InputField
                 name="password"
                 placeholder="password"

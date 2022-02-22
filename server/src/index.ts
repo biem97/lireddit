@@ -14,22 +14,21 @@ import { HelloResolver } from "./resolvers/hello";
 import { PostResolver } from "./resolvers/post";
 import { UserResolver } from "./resolvers/user";
 import cors from "cors";
+import IORedis from "ioredis";
 
 // redis@v4
 import session from "express-session";
 import connectRedis from "connect-redis";
-import { createClient } from "redis";
+
 const main = async () => {
   const orm = await MikroORM.init(microConfig);
-
   // Run migration
   await orm.getMigrator().up();
 
   const app = express();
 
-  const redisClient = createClient({ legacyMode: true });
+  const redisClient = new IORedis();
   const RedisStore = connectRedis(session);
-  redisClient.connect().catch(console.error);
 
   app.use(
     cors({
@@ -66,7 +65,7 @@ const main = async () => {
       resolvers: [HelloResolver, PostResolver, UserResolver],
       validate: false,
     }),
-    context: ({ req, res }) => ({ em: orm.em, req, res }),
+    context: ({ req, res }) => ({ em: orm.em, req, res, redis: redisClient }),
   });
 
   await apolloServer.start();

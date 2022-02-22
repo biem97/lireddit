@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Box } from "@chakra-ui/react";
+import { Button, Box, Link } from "@chakra-ui/react";
 import { Form, Formik } from "formik";
 import Container from "../components/Container";
 import InputField from "../components/Input/InputField";
@@ -8,6 +8,7 @@ import { useRouter } from "next/router";
 import { useLoginMutation } from "../generated/graphql";
 import { createUrqlClient } from "../utils/createUrqlClient";
 import { withUrqlClient } from "next-urql";
+import NextLink from "next/link";
 
 const Login = () => {
   const [{ fetching }, login] = useLoginMutation();
@@ -17,28 +18,27 @@ const Login = () => {
   return (
     <Container mx="auto" py="28">
       <Formik
-        initialValues={{ username: "", password: "" }}
+        initialValues={{ usernameOrEmail: "", password: "" }}
         onSubmit={async (value, { setErrors }) => {
           const response = await login({
-            options: value,
+            usernameOrEmail: value.usernameOrEmail,
+            password: value.password,
           });
-          console.log("response:", response);
           if (response.data?.login.errors) {
             setErrors(toErrorMap(response.data.login.errors));
           } else if (response.data?.login.user) {
             // successfully register
             router.push("/");
           }
-          console.log("response: ", response);
         }}
       >
         {() => (
           <Form>
             <Box display={"flex"} flexDirection={"column"} gap={"4"}>
               <InputField
-                name="username"
-                placeholder="username"
-                label="Username"
+                name="usernameOrEmail"
+                placeholder="Username or Email"
+                label="Username or Email"
               />
               <InputField
                 name="password"
@@ -46,11 +46,14 @@ const Login = () => {
                 label="Password"
                 type="password"
               />
+              <NextLink href="/forgot-password">
+                <Link alignSelf="end">Forgot Password?</Link>
+              </NextLink>
               <Button
                 type="submit"
                 color={"teal"}
                 bgColor="teal.100"
-                alignSelf={"center"}
+                alignSelf="start"
                 isLoading={fetching}
               >
                 Login
