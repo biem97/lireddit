@@ -1,10 +1,6 @@
-import { MikroORM } from "@mikro-orm/core";
-
+import "reflect-metadata";
 // Constants
 import { COOKIES_NAME, __prod___ } from "./constants";
-
-// Micro Config
-import microConfig from "./mikro-orm.config";
 
 // Server
 import express from "express";
@@ -20,10 +16,20 @@ import IORedis from "ioredis";
 import session from "express-session";
 import connectRedis from "connect-redis";
 
+import { createConnection } from "typeorm";
+import { Post } from "./entities/Post";
+import { User } from "./entities/User";
+
 const main = async () => {
-  const orm = await MikroORM.init(microConfig);
-  // Run migration
-  await orm.getMigrator().up();
+  const conn = await createConnection({
+    type: "postgres",
+    database: "lireddit2",
+    username: "postgres",
+    password: "postgres",
+    logging: true,
+    synchronize: true,
+    entities: [Post, User],
+  });
 
   const app = express();
 
@@ -65,7 +71,7 @@ const main = async () => {
       resolvers: [HelloResolver, PostResolver, UserResolver],
       validate: false,
     }),
-    context: ({ req, res }) => ({ em: orm.em, req, res, redis: redisClient }),
+    context: ({ req, res }) => ({ req, res, redis: redisClient }),
   });
 
   await apolloServer.start();
