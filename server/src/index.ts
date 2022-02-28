@@ -11,6 +11,7 @@ import { PostResolver } from "./resolvers/post";
 import { UserResolver } from "./resolvers/user";
 import cors from "cors";
 import IORedis from "ioredis";
+import path from "path";
 
 // redis@v4
 import session from "express-session";
@@ -19,6 +20,7 @@ import connectRedis from "connect-redis";
 import { createConnection } from "typeorm";
 import { Post } from "./entities/Post";
 import { User } from "./entities/User";
+import { Updoot } from "./entities/Updoot";
 
 const main = async () => {
   const conn = await createConnection({
@@ -28,8 +30,13 @@ const main = async () => {
     password: "postgres",
     logging: true,
     synchronize: true,
-    entities: [Post, User],
+    entities: [Post, User, Updoot],
+    migrations: [path.join(__dirname, "./migrations/*")],
   });
+
+  await conn.runMigrations();
+
+  // await Post.delete({});
 
   const app = express();
 
@@ -58,8 +65,10 @@ const main = async () => {
       cookie: {
         maxAge: 1000 * 60 * 60 * 24 * 365 * 10, // 10 years
         httpOnly: true, // cookie won't be accessible by Javascript on the front end
-        secure: __prod___, // cookie only works in https or manually disable when using apollo studio
-        sameSite: "lax", // csrf
+        // secure: __prod___, // cookie only works in https or manually disable when using apollo studio
+        secure: true,
+        // sameSite: "lax", // csrf
+        sameSite: "none",
       },
     })
   );

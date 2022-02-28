@@ -2,7 +2,7 @@ import React from "react";
 import { Button, Box, Link } from "@chakra-ui/react";
 import { Form, Formik } from "formik";
 import Container from "../components/Container";
-import InputField from "../components/Input/InputField";
+import InputField from "../components/InputField";
 import { toErrorMap } from "../utils/toErrorMap";
 import { useRouter } from "next/router";
 import { useLoginMutation } from "../generated/graphql";
@@ -11,10 +11,9 @@ import { withUrqlClient } from "next-urql";
 import NextLink from "next/link";
 
 const Login = () => {
-  const [{ fetching }, login] = useLoginMutation();
+  const [_, login] = useLoginMutation();
 
   const router = useRouter();
-
   return (
     <Container mx="auto" py="28">
       <Formik
@@ -28,11 +27,13 @@ const Login = () => {
             setErrors(toErrorMap(response.data.login.errors));
           } else if (response.data?.login.user) {
             // successfully register
-            router.push("/");
+            if (typeof router.query.next === "string")
+              router.push(router.query.next);
+            else router.push("/");
           }
         }}
       >
-        {() => (
+        {({ isSubmitting }) => (
           <Form>
             <Box display={"flex"} flexDirection={"column"} gap={"4"}>
               <InputField
@@ -54,7 +55,7 @@ const Login = () => {
                 color={"teal"}
                 bgColor="teal.100"
                 alignSelf="start"
-                isLoading={fetching}
+                isLoading={isSubmitting}
               >
                 Login
               </Button>

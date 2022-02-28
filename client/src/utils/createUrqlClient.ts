@@ -1,13 +1,37 @@
-import { dedupExchange, fetchExchange } from "urql";
-import { cacheExchange } from "@urql/exchange-graphcache";
+import {
+  dedupExchange,
+  Exchange,
+  fetchExchange,
+  stringifyVariables,
+} from "urql";
+import { cacheExchange, Resolver } from "@urql/exchange-graphcache";
 import {
   LogoutMutation,
   MeQuery,
   MeDocument,
   LoginMutation,
   RegisterMutation,
+  CreatePostMutation,
+  PostsQuery,
 } from "../generated/graphql";
 import { betterUpdateQuery } from "./betterUpdateQuery";
+import { pipe, tap } from "wonka";
+import Router from "next/router";
+
+export const errorExchange: Exchange =
+  ({ forward }) =>
+  (ops$) => {
+    return pipe(
+      forward(ops$),
+      tap(({ error }) => {
+        if (error) {
+          if (error.message.match(/Not Authenticated/i)) {
+            Router.replace("/login");
+          }
+        }
+      })
+    );
+  };
 
 export const createUrqlClient = (ssrExchange: any) => ({
   url: "http://localhost:4000/graphql",
@@ -17,6 +41,14 @@ export const createUrqlClient = (ssrExchange: any) => ({
   exchanges: [
     dedupExchange,
     cacheExchange({
+      keys: {
+        PaginatedPost: () => null,
+      },
+      resolvers: {
+        Query: {
+          posts: cursorPagination(),
+        },
+      },
       updates: {
         Mutation: {
           logout: (_result, args, cache, info) => {
@@ -59,10 +91,106 @@ export const createUrqlClient = (ssrExchange: any) => ({
               }
             );
           },
+          // createPost: (_result, args, cache, info) => {
+          //   betterUpdateQuery<CreatePostMutation, PostsQuery>(
+          //     cache,
+          //     { query: MeDocument },
+          //     _result,
+          //     (result, query) => {
+          //       return {
+          //         ...result.createPost,
+          //       };
+          //     }
+          //   );
+          // },
         },
       },
     }),
+    errorExchange,
     ssrExchange,
     fetchExchange,
   ],
 });
+
+export type MergeMode = "before" | "after";
+
+export const cursorPagination = (): Resolver => {
+  return (_parent, fieldArgs, cache, info) => {
+    const { parentKey: entityKey, fieldName } = info;
+    const allFields = cache.inspectFields(entityKey);
+    const fieldInfos = allFields.filter((info) => info.fieldName === fieldName);
+    const size = fieldInfos.length;
+    if (size === 0) {
+      return undefined;
+    }
+    const fieldKey = `${fieldName}(${stringifyVariables(fieldArgs)})`;
+    // console.log("fieldKey: ", fieldKey);
+
+    const isItInTheCache = cache.resolve(entityKey, fieldKey);
+    info.partial = !isItInTheCache;
+
+    // Read from cache
+    const results: string[] = [];
+    let hasMore: boolean | undefined;
+    console.log("fieldInfos: ", fieldInfos);
+    fieldInfos.forEach((fi) => {
+      const key = cache.resolve(entityKey, fi.fieldKey) as string;
+      const posts = cache.resolve(key, "posts") as string[];
+      hasMore = cache.resolve(key, "hasMore") as boolean;
+      results.push(...posts);
+    });
+
+    return { hasMore, posts: results, __typename: "PaginatedPosts" };
+    // const visited = new Set();
+    // let result: NullArray<string> = [];
+    // let prevOffset: number | null = null;
+
+    // for (let i = 0; i < size; i++) {
+    //   const { fieldKey, arguments: args } = fieldInfos[i];
+    //   if (args === null || !compareArgs(fieldArgs, args)) {
+    //     continue;
+    //   }
+
+    //   const links = cache.resolve(entityKey, fieldKey) as string[];
+    //   const currentOffset = args[cursorArgument];
+
+    //   if (
+    //     links === null ||
+    //     links.length === 0 ||
+    //     typeof currentOffset !== "number"
+    //   ) {
+    //     continue;
+    //   }
+
+    //   const tempResult: NullArray<string> = [];
+
+    //   for (let j = 0; j < links.length; j++) {
+    //     const link = links[j];
+    //     if (visited.has(link)) continue;
+    //     tempResult.push(link);
+    //     visited.add(link);
+    //   }
+
+    //   if (
+    //     (!prevOffset || currentOffset > prevOffset) ===
+    //     (mergeMode === "after")
+    //   ) {
+    //     result = [...result, ...tempResult];
+    //   } else {
+    //     result = [...tempResult, ...result];
+    //   }
+
+    //   prevOffset = currentOffset;
+    // }
+
+    // const hasCurrentPage = cache.resolve(entityKey, fieldName, fieldArgs);
+    // if (hasCurrentPage) {
+    //   return result;
+    // } else if (!(info as any).store.schema) {
+    //   return undefined;
+    // } else {
+    //   info.partial = true;
+    //   return result;
+    // }
+  };
+};

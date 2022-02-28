@@ -2,7 +2,7 @@ import { Box, Button, Container, Flex, Link } from "@chakra-ui/react";
 import { Form, Formik } from "formik";
 import { withUrqlClient } from "next-urql";
 import { useState } from "react";
-import InputField from "../components/Input/InputField";
+import InputField from "../components/InputField";
 import { useForgotPasswordMutation } from "../generated/graphql";
 import { createUrqlClient } from "../utils/createUrqlClient";
 import NextLink from "next/link";

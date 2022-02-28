@@ -4,10 +4,12 @@ import {
   Arg,
   Ctx,
   Field,
+  FieldResolver,
   Mutation,
   ObjectType,
   Query,
   Resolver,
+  Root,
 } from "type-graphql";
 import argon2 from "argon2";
 import { COOKIES_NAME, FORGET_PASSWORD_PREFIX } from "../constants";
@@ -35,8 +37,20 @@ class UserResponse {
   errors?: FieldError[];
 }
 
-@Resolver()
+@Resolver(User)
 export class UserResolver {
+  // Example for field permission
+  @FieldResolver(() => String)
+  email(@Root() user: User, @Ctx() { req }: MyContext) {
+    // this is the current user and its ok to show them their own email
+    if (req.session.userId === user.id) {
+      return user.email;
+    }
+
+    // current user wants to see someone elses email
+    return "";
+  }
+
   @Query(() => User, { nullable: true })
   me(@Ctx() { req }: MyContext) {
     // you are not logged in

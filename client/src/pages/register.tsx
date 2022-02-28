@@ -2,7 +2,7 @@ import React from "react";
 import { Button, Box } from "@chakra-ui/react";
 import { Form, Formik } from "formik";
 import Container from "../components/Container";
-import InputField from "../components/Input/InputField";
+import InputField from "../components/InputField";
 import { useRegisterMutation } from "../generated/graphql";
 import { toErrorMap } from "../utils/toErrorMap";
 import { useRouter } from "next/router";
