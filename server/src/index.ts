@@ -65,10 +65,9 @@ const main = async () => {
       cookie: {
         maxAge: 1000 * 60 * 60 * 24 * 365 * 10, // 10 years
         httpOnly: true, // cookie won't be accessible by Javascript on the front end
-        // secure: __prod___, // cookie only works in https or manually disable when using apollo studio
-        secure: true,
-        // sameSite: "lax", // csrf
-        sameSite: "none",
+        secure: __prod___, // cookie only works in https or manually disable when using apollo studio
+        // secure: true,
+        sameSite: "lax", // csrf
       },
     })
   );

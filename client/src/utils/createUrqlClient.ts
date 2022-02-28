@@ -91,18 +91,21 @@ export const createUrqlClient = (ssrExchange: any) => ({
               }
             );
           },
-          // createPost: (_result, args, cache, info) => {
-          //   betterUpdateQuery<CreatePostMutation, PostsQuery>(
-          //     cache,
-          //     { query: MeDocument },
-          //     _result,
-          //     (result, query) => {
-          //       return {
-          //         ...result.createPost,
-          //       };
-          //     }
-          //   );
-          // },
+          createPost: (_result, args, cache, info) => {
+            const allFields = cache.inspectFields("Query");
+            const fieldInfos = allFields.filter(
+              (info) => info.fieldName === "posts"
+            );
+
+            fieldInfos.forEach((fi) => {
+              cache.invalidate("Query", "posts", fi.arguments);
+            });
+
+            // Invalidate the posts from the cache so we could query the posts again
+            cache.invalidate("Query", "posts", {
+              limit: 5,
+            });
+          },
         },
       },
     }),
@@ -132,7 +135,6 @@ export const cursorPagination = (): Resolver => {
     // Read from cache
     const results: string[] = [];
     let hasMore: boolean | undefined;
-    console.log("fieldInfos: ", fieldInfos);
     fieldInfos.forEach((fi) => {
       const key = cache.resolve(entityKey, fi.fieldKey) as string;
       const posts = cache.resolve(key, "posts") as string[];

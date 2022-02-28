@@ -12,11 +12,14 @@ import {
   Link,
   Stack,
   Text,
+  IconButton,
 } from "@chakra-ui/react";
+import { ChevronUpIcon, ChevronDownIcon } from "@chakra-ui/icons";
+import UpdootSection from "../components/UpdootSection";
 
 const Index = () => {
   const [pagination, setPagination] = useState({
-    limit: 49,
+    limit: 5,
     cursor: null as null | string,
   });
   const [{ data, fetching }] = usePostsQuery({
@@ -42,21 +45,33 @@ const Index = () => {
           <Link ml="auto">Create Post</Link>
         </NextLink>
       </Flex>
-      {fetching && !data && <div>Loadingg</div>}
-      {data && (
+      {fetching && !data ? (
+        <div>Loadingg</div>
+      ) : (
         <>
-          {data.posts.posts.map((p) => (
-            <Stack spacing={8} marginY={4} key={p.id}>
-              <Box p={8} shadow="md" borderWidth="1px">
-                <Heading fontSize="xl">{p.title}</Heading>
-                <Text mt={4}>{p.textSnippet}</Text>
-              </Box>
-            </Stack>
-          ))}
+          <Stack spacing={8} marginY={4}>
+            {data!.posts.posts.map((p) => (
+              <Flex key={p.id} p={8} shadow="md" borderWidth="1px" gap={5}>
+                <UpdootSection post={p} />
+                <Box>
+                  <Heading fontSize="xl">{p.title}</Heading>
+                  <Text
+                    mt={1}
+                    fontWeight={200}
+                    fontSize={"sm"}
+                    color="gray.400"
+                  >
+                    Posted by {p.creator.username}
+                  </Text>
+                  <Text mt={4}>{p.textSnippet}</Text>
+                </Box>
+              </Flex>
+            ))}
+          </Stack>
           <Flex>
-            {typeof data.posts.hasMore === "undefined" ? (
+            {typeof data!.posts.hasMore === "undefined" ? (
               <Box>Error</Box>
-            ) : data.posts.hasMore ? (
+            ) : data!.posts.hasMore ? (
               <Button
                 onClick={handleOnClick}
                 isLoading={fetching}
