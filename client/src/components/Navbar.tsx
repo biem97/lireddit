@@ -8,9 +8,7 @@ interface NavbarProps {}
 
 const Navbar = ({}: NavbarProps) => {
   const [{ fetching: logoutFetching }, logout] = useLogoutMutation();
-  const [{ data }] = useMeQuery({
-    pause: isServer(),
-  });
+  const [{ data }] = useMeQuery();
 
   return (
     <Flex bg="tan" p={4} ml={"auto"}>

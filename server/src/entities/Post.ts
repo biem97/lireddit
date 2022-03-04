@@ -1,4 +1,4 @@
-import { Field, ObjectType } from "type-graphql";
+import { Field, Int, ObjectType } from "type-graphql";
 import {
   Entity,
   Column,
@@ -8,6 +8,7 @@ import {
   BaseEntity,
   ManyToOne,
   OneToMany,
+  OneToOne,
 } from "typeorm";
 import { Updoot } from "./Updoot";
 import { User } from "./User";
@@ -30,6 +31,9 @@ export class Post extends BaseEntity {
   @Field()
   @Column({ type: "int", default: 0 })
   points!: string;
+
+  @Field(() => Int, { nullable: true })
+  voteStatus: number | null; // 1 or -1 or null
 
   @Field()
   @Column()

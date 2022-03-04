@@ -17,7 +17,7 @@ import path from "path";
 import session from "express-session";
 import connectRedis from "connect-redis";
 
-import { createConnection } from "typeorm";
+import { createConnection, getConnection } from "typeorm";
 import { Post } from "./entities/Post";
 import { User } from "./entities/User";
 import { Updoot } from "./entities/Updoot";
@@ -25,7 +25,7 @@ import { Updoot } from "./entities/Updoot";
 const main = async () => {
   const conn = await createConnection({
     type: "postgres",
-    database: "lireddit2",
+    database: "lireddit",
     username: "postgres",
     password: "postgres",
     logging: true,
@@ -35,8 +35,6 @@ const main = async () => {
   });
 
   await conn.runMigrations();
-
-  // await Post.delete({});
 
   const app = express();
 

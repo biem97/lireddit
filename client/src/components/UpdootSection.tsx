@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { ChevronUpIcon, ChevronDownIcon } from "@chakra-ui/icons";
 import { Flex, IconButton, Text } from "@chakra-ui/react";
 import { PostSnippetFragment, useVoteMutation } from "../generated/graphql";
+import { withUrqlClient } from "next-urql";
+import { createUrqlClient } from "../utils/createUrqlClient";
 
 interface UpdootSectionProps {
   // post: PostsQuery["posts"]["posts"][0];
@@ -14,21 +16,21 @@ const UpdootSection = ({ post }: UpdootSectionProps) => {
   >("not-loading");
 
   const [, vote] = useVoteMutation();
-
   const handleVote =
     (type: "updoot" | "downdoot", postId: number) => async () => {
+      console.log("post: ", post.id);
       setLoadingState(
         type === "updoot" ? "updoot-loading" : "downdoot-loading"
       );
-
-      await vote({
+      const result = await vote({
         postId,
         value: type === "updoot" ? 1 : -1,
       });
 
+      console.log("done: ", result);
       setLoadingState("not-loading");
     };
-
+  console.log("voteStatus: ", post.voteStatus);
   return (
     <Flex
       flexDirection="column"
@@ -37,27 +39,21 @@ const UpdootSection = ({ post }: UpdootSectionProps) => {
       gap={1}
     >
       <IconButton
-        variant="ghost"
+        // variant="ghost"
+        colorScheme={post.voteStatus === 1 ? "blue" : undefined}
         aria-label="Up Vote"
-        icon={
-          <ChevronUpIcon
-            fontSize="24px"
-            onClick={handleVote("updoot", post.id)}
-          />
-        }
+        icon={<ChevronUpIcon fontSize="24px" />}
+        onClick={handleVote("updoot", post.id)}
         isLoading={loadingState === "updoot-loading"}
       />
       <Text>{post.points}</Text>
       <IconButton
-        variant="ghost"
+        // variant="ghost"
+        colorScheme={post.voteStatus === -1 ? "teal" : undefined}
         aria-label="Down Vote"
         isLoading={loadingState === "downdoot-loading"}
-        icon={
-          <ChevronDownIcon
-            onClick={handleVote("downdoot", post.id)}
-            fontSize="24px"
-          />
-        }
+        onClick={handleVote("downdoot", post.id)}
+        icon={<ChevronDownIcon fontSize="24px" />}
       />
     </Flex>
   );
