@@ -150,20 +150,51 @@ export class PostResolver {
     const realValue = isUpdoot ? 1 : -1;
     const { userId } = req.session;
 
-    getConnection().query(
-      `
-    start transaction;
+    const updoot = await Updoot.findOne({ where: { postId, userId } });
 
-    insert into updoot ("userId", "postId", value)
-    values (${userId}, ${postId}, ${realValue});
+    // the user has voted on the post before
+    // and they are changing their vote
+    if (updoot && updoot.value !== realValue) {
+      await getConnection().transaction(async (tm) => {
+        await tm.query(
+          `
+            update updoot
+            set value = $1
+            where "postId" = $2 and "userId" = $3
+          `,
+          [realValue, postId, userId]
+        );
 
-    update post 
-    set points = points + ${realValue}
-    where id = ${postId};
+        await tm.query(
+          `
+            update post 
+            set points = points + $1
+            where id = $2
+        `,
+          [2 * realValue, postId]
+        );
+      });
+    } else {
+      // has never voted before
+      await getConnection().transaction(async (tm) => {
+        await tm.query(
+          `
+            insert into updoot ("userId", "postId", value)
+            values ($1, $2, $3)
+        `,
+          [userId, postId, realValue]
+        );
 
-    commit;
-    `
-    );
+        await tm.query(
+          `
+            update post 
+            set points = points + $1
+            where id = $2
+        `,
+          [realValue, postId]
+        );
+      });
+    }
 
     return true;
   }
