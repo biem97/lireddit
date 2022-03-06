@@ -2,11 +2,8 @@ import React, { useState } from "react";
 import { ChevronUpIcon, ChevronDownIcon } from "@chakra-ui/icons";
 import { Flex, IconButton, Text } from "@chakra-ui/react";
 import { PostSnippetFragment, useVoteMutation } from "../generated/graphql";
-import { withUrqlClient } from "next-urql";
-import { createUrqlClient } from "../utils/createUrqlClient";
 
 interface UpdootSectionProps {
-  // post: PostsQuery["posts"]["posts"][0];
   post: PostSnippetFragment;
 }
 
@@ -15,16 +12,24 @@ const UpdootSection = ({ post }: UpdootSectionProps) => {
     "updoot-loading" | "downdoot-loading" | "not-loading"
   >("not-loading");
 
-  const [, vote] = useVoteMutation();
+  const [vote] = useVoteMutation();
   const handleVote =
     (type: "updoot" | "downdoot", postId: number) => async () => {
+      if (
+        (type === "downdoot" && post.voteStatus === -1) ||
+        (type === "updoot" && post.voteStatus === 1)
+      )
+        return;
+
       setLoadingState(
         type === "updoot" ? "updoot-loading" : "downdoot-loading"
       );
 
       await vote({
-        postId,
-        value: type === "updoot" ? 1 : -1,
+        variables: {
+          postId,
+          value: type === "updoot" ? 1 : -1,
+        },
       });
 
       setLoadingState("not-loading");

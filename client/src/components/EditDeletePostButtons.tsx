@@ -10,7 +10,7 @@ interface EditDeletePostButtonsProps {
 }
 
 const EditDeletePostButtons = ({ id }: EditDeletePostButtonsProps) => {
-  const [_, deletePost] = useDeletePostMutation();
+  const [deletePost] = useDeletePostMutation();
 
   return (
     <Box>
@@ -24,7 +24,9 @@ const EditDeletePostButtons = ({ id }: EditDeletePostButtonsProps) => {
         aria-label="Delete Post"
         onClick={() => {
           deletePost({
-            id,
+            variables: {
+              id,
+            },
           });
         }}
         mx="1"

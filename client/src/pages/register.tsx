@@ -6,11 +6,9 @@ import InputField from "../components/InputField";
 import { useRegisterMutation } from "../generated/graphql";
 import { toErrorMap } from "../utils/toErrorMap";
 import { useRouter } from "next/router";
-import { withUrqlClient } from "next-urql";
-import { createUrqlClient } from "../utils/createUrqlClient";
 
 const Register = () => {
-  const [{ fetching }, register] = useRegisterMutation();
+  const [register, { loading }] = useRegisterMutation();
   const router = useRouter();
 
   return (
@@ -19,7 +17,9 @@ const Register = () => {
         initialValues={{ username: "", email: "", password: "" }}
         onSubmit={async (value, { setErrors }) => {
           const response = await register({
-            options: value,
+            variables: {
+              options: value,
+            },
           });
           if (response.data?.register.errors) {
             setErrors(toErrorMap(response.data.register.errors));
@@ -49,7 +49,7 @@ const Register = () => {
                 color={"teal"}
                 bgColor="teal.100"
                 alignSelf={"center"}
-                isLoading={fetching}
+                isLoading={loading}
               >
                 Register
               </Button>
@@ -61,4 +61,4 @@ const Register = () => {
   );
 };
 
-export default withUrqlClient(createUrqlClient, { ssr: true })(Register);
+export default Register;

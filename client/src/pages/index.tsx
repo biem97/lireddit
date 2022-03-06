@@ -1,6 +1,4 @@
 import { useState } from "react";
-import { withUrqlClient } from "next-urql";
-import { createUrqlClient } from "../utils/createUrqlClient";
 import { useMeQuery, usePostsQuery } from "../generated/graphql";
 import Layout from "../components/Layout";
 import NextLink from "next/link";
@@ -22,10 +20,10 @@ const Index = () => {
     limit: 5,
     cursor: null as null | string,
   });
-  const [{ data, fetching, error }] = usePostsQuery({
+  const { data, loading, error } = usePostsQuery({
     variables: pagination,
   });
-  const [{ data: meData }] = useMeQuery();
+  const { data: meData } = useMeQuery();
 
   const handleOnClick = () => {
     setPagination({
@@ -34,7 +32,7 @@ const Index = () => {
     });
   };
 
-  if (!fetching && !data) {
+  if (!loading && !data) {
     console.log("error: ", error);
     return <div>you got query failed for some reason</div>;
   }
@@ -46,7 +44,7 @@ const Index = () => {
           <Link ml="auto">Create Post</Link>
         </NextLink>
       </Flex>
-      {fetching && !data ? (
+      {loading && !data ? (
         <div>Loadingg</div>
       ) : (
         <>
@@ -87,7 +85,7 @@ const Index = () => {
             ) : data!.posts.hasMore ? (
               <Button
                 onClick={handleOnClick}
-                isLoading={fetching}
+                isLoading={loading}
                 m="auto"
                 my={4}
               >
@@ -103,4 +101,4 @@ const Index = () => {
   );
 };
 
-export default withUrqlClient(createUrqlClient, { ssr: true })(Index);
+export default Index;

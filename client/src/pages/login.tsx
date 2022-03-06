@@ -6,12 +6,10 @@ import InputField from "../components/InputField";
 import { toErrorMap } from "../utils/toErrorMap";
 import { useRouter } from "next/router";
 import { useLoginMutation } from "../generated/graphql";
-import { createUrqlClient } from "../utils/createUrqlClient";
-import { withUrqlClient } from "next-urql";
 import NextLink from "next/link";
 
 const Login = () => {
-  const [_, login] = useLoginMutation();
+  const [login] = useLoginMutation();
 
   const router = useRouter();
   return (
@@ -20,8 +18,10 @@ const Login = () => {
         initialValues={{ usernameOrEmail: "", password: "" }}
         onSubmit={async (value, { setErrors }) => {
           const response = await login({
-            usernameOrEmail: value.usernameOrEmail,
-            password: value.password,
+            variables: {
+              usernameOrEmail: value.usernameOrEmail,
+              password: value.password,
+            },
           });
           if (response.data?.login.errors) {
             setErrors(toErrorMap(response.data.login.errors));
@@ -67,4 +67,4 @@ const Login = () => {
   );
 };
 
-export default withUrqlClient(createUrqlClient, { ssr: true })(Login);
+export default Login;
