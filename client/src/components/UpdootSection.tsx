@@ -18,19 +18,17 @@ const UpdootSection = ({ post }: UpdootSectionProps) => {
   const [, vote] = useVoteMutation();
   const handleVote =
     (type: "updoot" | "downdoot", postId: number) => async () => {
-      console.log("post: ", post.id);
       setLoadingState(
         type === "updoot" ? "updoot-loading" : "downdoot-loading"
       );
-      const result = await vote({
+
+      await vote({
         postId,
         value: type === "updoot" ? 1 : -1,
       });
 
-      console.log("done: ", result);
       setLoadingState("not-loading");
     };
-  console.log("voteStatus: ", post.voteStatus);
   return (
     <Flex
       flexDirection="column"

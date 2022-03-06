@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { withUrqlClient } from "next-urql";
 import { createUrqlClient } from "../utils/createUrqlClient";
-import { usePostsQuery } from "../generated/graphql";
+import { useMeQuery, usePostsQuery } from "../generated/graphql";
 import Layout from "../components/Layout";
 import NextLink from "next/link";
 import {
@@ -15,6 +15,7 @@ import {
 } from "@chakra-ui/react";
 
 import UpdootSection from "../components/UpdootSection";
+import EditDeletePostButtons from "../components/EditDeletePostButtons";
 
 const Index = () => {
   const [pagination, setPagination] = useState({
@@ -24,6 +25,7 @@ const Index = () => {
   const [{ data, fetching }] = usePostsQuery({
     variables: pagination,
   });
+  const [{ data: meData }] = useMeQuery();
 
   const handleOnClick = () => {
     setPagination({
@@ -39,7 +41,6 @@ const Index = () => {
   return (
     <Layout>
       <Flex textAlign="center">
-        <Heading>LiReddit</Heading>
         <NextLink href="/create-post">
           <Link ml="auto">Create Post</Link>
         </NextLink>
@@ -49,23 +50,35 @@ const Index = () => {
       ) : (
         <>
           <Stack spacing={8} marginY={4}>
-            {data!.posts.posts.map((p) => (
-              <Flex key={p.id} p={8} shadow="md" borderWidth="1px" gap={5}>
-                <UpdootSection post={p} />
-                <Box>
-                  <Heading fontSize="xl">{p.title}</Heading>
-                  <Text
-                    mt={1}
-                    fontWeight={200}
-                    fontSize={"sm"}
-                    color="gray.400"
-                  >
-                    Posted by {p.creator.username}
-                  </Text>
-                  <Text mt={4}>{p.textSnippet}</Text>
-                </Box>
-              </Flex>
-            ))}
+            {data!.posts.posts.map((p) =>
+              !p ? null : (
+                <Flex key={p.id} p={8} shadow="md" borderWidth="1px" gap={5}>
+                  <UpdootSection post={p} />
+                  <Box flexGrow={1}>
+                    <Flex justify="space-between" align="center">
+                      <NextLink href={"/post/[id]"} as={`/post/${p.id}`}>
+                        <Link mr={100}>
+                          <Heading fontSize="xl">{p.title}</Heading>
+                        </Link>
+                      </NextLink>
+                      {meData?.me?.id === p.creator.id && (
+                        <EditDeletePostButtons id={p.id} />
+                      )}
+                    </Flex>
+
+                    <Text
+                      mt={1}
+                      fontWeight={200}
+                      fontSize={"sm"}
+                      color="gray.400"
+                    >
+                      Posted by {p.creator.username}
+                    </Text>
+                    <Text mt={4}>{p.textSnippet}</Text>
+                  </Box>
+                </Flex>
+              )
+            )}
           </Stack>
           <Flex>
             {typeof data!.posts.hasMore === "undefined" ? (

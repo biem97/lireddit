@@ -1,16 +1,23 @@
-import { Box, Button, Flex, Link } from "@chakra-ui/react";
+import { Box, Button, Flex, Heading, Link } from "@chakra-ui/react";
 import NextLink from "next/link";
 import React from "react";
 import { useLogoutMutation, useMeQuery } from "../generated/graphql";
 
-interface NavbarProps {}
+interface NavBarProps {}
 
-const Navbar = ({}: NavbarProps) => {
+const NavBar = ({}: NavBarProps) => {
   const [{ fetching: logoutFetching }, logout] = useLogoutMutation();
   const [{ data }] = useMeQuery();
 
   return (
     <Flex bg="tan" p={4} ml={"auto"}>
+      <NextLink href={"/"}>
+        <Link>
+          <Heading fontSize="xl" color="blue.500">
+            LiReddit
+          </Heading>
+        </Link>
+      </NextLink>
       <Box ml={"auto"}>
         {data?.me ? (
           <Flex>
@@ -42,4 +49,4 @@ const Navbar = ({}: NavbarProps) => {
   );
 };
 
-export default Navbar;
+export default NavBar;

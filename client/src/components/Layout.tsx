@@ -1,6 +1,6 @@
 import React from "react";
 import { Box } from "@chakra-ui/react";
-import Navbar from "./Navbar";
+import NavBar from "./NavBar";
 import Wrapper from "./Wrapper";
 
 export type LayoutVariant = "small" | "regular";
@@ -13,7 +13,7 @@ interface LayoutProps {
 const Layout = ({ children, variant }: LayoutProps) => {
   return (
     <Box>
-      <Navbar />
+      <NavBar />
       <Wrapper variant={variant}>{children}</Wrapper>
     </Box>
   );
