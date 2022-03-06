@@ -22,7 +22,7 @@ const Index = () => {
     limit: 5,
     cursor: null as null | string,
   });
-  const [{ data, fetching }] = usePostsQuery({
+  const [{ data, fetching, error }] = usePostsQuery({
     variables: pagination,
   });
   const [{ data: meData }] = useMeQuery();
@@ -35,6 +35,7 @@ const Index = () => {
   };
 
   if (!fetching && !data) {
+    console.log("error: ", error);
     return <div>you got query failed for some reason</div>;
   }
 
