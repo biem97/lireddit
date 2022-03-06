@@ -1304,16 +1304,6 @@
     change-case-all "1.0.14"
     tslib "~2.3.0"
 
-"@graphql-codegen/typescript-urql@^3.5.3":
-  version "3.5.3"
-  resolved "https://registry.yarnpkg.com/@graphql-codegen/typescript-urql/-/typescript-urql-3.5.3.tgz#28d4edf74af04f56d5b3c34824166b4da0a6394d"
-  integrity sha512-iTRZepk0pYx9jqS0J2NWCZG3CvaI1WianloqZXLS0oPnoq+2jUJgkS1oIeuGlXOTAfu57bMLxqAjOaxFpLUk8w==
-  dependencies:
-    "@graphql-codegen/plugin-helpers" "^2.4.0"
-    "@graphql-codegen/visitor-plugin-common" "2.7.1"
-    auto-bind "~4.0.0"
-    tslib "~2.3.0"
-
 "@graphql-codegen/typescript@2.4.5", "@graphql-codegen/typescript@^2.4.5":
   version "2.4.5"
   resolved "https://registry.yarnpkg.com/@graphql-codegen/typescript/-/typescript-2.4.5.tgz#80ca7a343511a27cd587c0b220b0a0dd99a4dc4b"
@@ -1562,7 +1552,7 @@
     tslib "~2.3.0"
     value-or-promise "1.0.11"
 
-"@graphql-typed-document-node/core@^3.0.0", "@graphql-typed-document-node/core@^3.1.1":
+"@graphql-typed-document-node/core@^3.0.0":
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/@graphql-typed-document-node/core/-/core-3.1.1.tgz#076d78ce99822258cf813ecc1e7fa460fa74d052"
   integrity sha512-NQ17ii0rK1b34VZonlmT2QMJFI70m0TRwbknO/ihlbatXyaktDhN/98vBiUU6kNBPljqGqyIrl2T4nY2RpFANg==
@@ -1883,22 +1873,6 @@
   dependencies:
     "@typescript-eslint/types" "5.12.0"
     eslint-visitor-keys "^3.0.0"
-
-"@urql/core@>=2.3.6", "@urql/core@^2.4.1":
-  version "2.4.2"
-  resolved "https://registry.yarnpkg.com/@urql/core/-/core-2.4.2.tgz#883e35c031fe7dfb18064467a2560027730299e2"
-  integrity sha512-MRqhhxTPuqYGttB/WL55kOIZN5tHFpbOJqmuSuDYvHaNFVSoRJfO3VhSr2rBI3zjC5oz8///dFNDEyClK/bBZw==
-  dependencies:
-    "@graphql-typed-document-node/core" "^3.1.1"
-    wonka "^4.0.14"
-
-"@urql/exchange-graphcache@^4.3.6":
-  version "4.3.6"
-  resolved "https://registry.yarnpkg.com/@urql/exchange-graphcache/-/exchange-graphcache-4.3.6.tgz#fea25b8877a704a9d65bdd29578fa6e9fd31bfa5"
-  integrity sha512-RDEi1954lcnwBK2dwQGaxOInuebZrRliz2v7aAuQasj49N9bWYrlSkBfELG14EzOL7NI23IUaeLeaDN7MouDJg==
-  dependencies:
-    "@urql/core" ">=2.3.6"
-    wonka "^4.0.14"
 
 "@wry/context@^0.6.0":
   version "0.6.1"
@@ -4313,13 +4287,6 @@ natural-compare@^1.4.0:
   resolved "https://registry.yarnpkg.com/natural-compare/-/natural-compare-1.4.0.tgz#4abebfeed7541f2c27acfb29bdbbd15c8d5ba4f7"
   integrity sha1-Sr6/7tdUHywnrPspvbvRXI1bpPc=
 
-next-urql@^3.3.2:
-  version "3.3.2"
-  resolved "https://registry.yarnpkg.com/next-urql/-/next-urql-3.3.2.tgz#8be8e37f48726c55cb1c3eecb8c2003bdc319f2e"
-  integrity sha512-oXQHCFU0R3pIwXWtDqZDYOjKcD7SlNP7aove9YuukgKuItdtIR9CRUgo3qMOD5dSQ3wBBGfQ8zR6XtzqV5WiGg==
-  dependencies:
-    react-ssr-prepass "^1.4.0"
-
 next@latest:
   version "12.0.10"
   resolved "https://registry.yarnpkg.com/next/-/next-12.0.10.tgz#fcc4584177418bd777ce157f3165b7ba5e7708f7"
@@ -4827,11 +4794,6 @@ react-remove-scroll@2.4.1:
     tslib "^1.0.0"
     use-callback-ref "^1.2.3"
     use-sidecar "^1.0.1"
-
-react-ssr-prepass@^1.4.0:
-  version "1.5.0"
-  resolved "https://registry.yarnpkg.com/react-ssr-prepass/-/react-ssr-prepass-1.5.0.tgz#bc4ca7fcb52365e6aea11cc254a3d1bdcbd030c5"
-  integrity sha512-yFNHrlVEReVYKsLI5lF05tZoHveA5pGzjFbFJY/3pOqqjGOmMmqx83N4hIjN2n6E1AOa+eQEUxs3CgRnPmT0RQ==
 
 react-style-singleton@^2.1.0:
   version "2.1.1"
@@ -5572,15 +5534,6 @@ url-parse-lax@^3.0.0:
   dependencies:
     prepend-http "^2.0.0"
 
-urql@^2.1.3:
-  version "2.1.3"
-  resolved "https://registry.yarnpkg.com/urql/-/urql-2.1.3.tgz#4bfe631db03dc059738ff774b46244bf1a755c6d"
-  integrity sha512-S6GaKM7NJLed25L2qdZxaWFjWggXQHrneEVEe47+ZTQWxmfyV05STMl6DhtnZqb6n1wdT/KUljHkggz0kiE3NA==
-  dependencies:
-    "@urql/core" "^2.4.1"
-    use-sync-external-store "1.0.0-rc.0 || ^1.0.0"
-    wonka "^4.0.14"
-
 use-callback-ref@^1.2.3, use-callback-ref@^1.2.5:
   version "1.2.5"
   resolved "https://registry.yarnpkg.com/use-callback-ref/-/use-callback-ref-1.2.5.tgz#6115ed242cfbaed5915499c0a9842ca2912f38a5"
@@ -5600,11 +5553,6 @@ use-subscription@1.5.1:
   integrity sha512-Xv2a1P/yReAjAbhylMfFplFKj9GssgTwN7RlcTxBujFQcloStWNDQdc4g4NRWH9xS4i/FDk04vQBptAXoF3VcA==
   dependencies:
     object-assign "^4.1.1"
-
-"use-sync-external-store@1.0.0-rc.0 || ^1.0.0":
-  version "1.0.0-rc.0"
-  resolved "https://registry.yarnpkg.com/use-sync-external-store/-/use-sync-external-store-1.0.0-rc.0.tgz#0d8fb7cbc31ddfb3ee01225f6b0a700cf59c449b"
-  integrity sha512-0U9Xlc2QDFzSGMB0DvcJQL0+DIdxDPJC7mnZlYFbl7wrSrPMcs89X5TVkNB6Dzg618m8lZop+U+J6ow3vq9RAQ==
 
 util-deprecate@^1.0.1:
   version "1.0.2"
@@ -5690,11 +5638,6 @@ which@^2.0.1:
   integrity sha512-BLI3Tl1TW3Pvl70l3yq3Y64i+awpwXqsGBYWkkqMtnbXgrMD+yj7rhW0kuEDxzJaYXGjEW5ogapKNMEKNMjibA==
   dependencies:
     isexe "^2.0.0"
-
-wonka@^4.0.14:
-  version "4.0.15"
-  resolved "https://registry.yarnpkg.com/wonka/-/wonka-4.0.15.tgz#9aa42046efa424565ab8f8f451fcca955bf80b89"
-  integrity sha512-U0IUQHKXXn6PFo9nqsHphVCE5m3IntqZNB9Jjn7EB1lrR7YTDY3YWgFvEvwniTzXSvOH/XMzAZaIfJF/LvHYXg==
 
 word-wrap@^1.2.3:
   version "1.2.3"

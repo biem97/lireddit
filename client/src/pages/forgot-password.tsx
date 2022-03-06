@@ -7,7 +7,14 @@ import NextLink from "next/link";
 
 const ForgotPassword = () => {
   const [complete, setComplete] = useState(false);
-  const [forgotPassword] = useForgotPasswordMutation();
+  const [forgotPassword] = useForgotPasswordMutation({
+    onError: (err) => {
+      console.log("err: ", err);
+    },
+    onCompleted: (data) => {
+      console.log("Data: ", data);
+    },
+  });
 
   return (
     <Container mx="auto" py="28">

@@ -5,7 +5,7 @@ import Container from "../components/Container";
 import InputField from "../components/InputField";
 import { toErrorMap } from "../utils/toErrorMap";
 import { useRouter } from "next/router";
-import { useLoginMutation } from "../generated/graphql";
+import { MeDocument, MeQuery, useLoginMutation } from "../generated/graphql";
 import NextLink from "next/link";
 
 const Login = () => {
@@ -22,7 +22,18 @@ const Login = () => {
               usernameOrEmail: value.usernameOrEmail,
               password: value.password,
             },
+            update: (cache, { data }) => {
+              cache.writeQuery<MeQuery>({
+                query: MeDocument,
+                data: {
+                  __typename: "Query",
+                  me: data?.login.user,
+                },
+              });
+              cache.evict({ fieldName: "posts" });
+            },
           });
+
           if (response.data?.login.errors) {
             setErrors(toErrorMap(response.data.login.errors));
           } else if (response.data?.login.user) {

@@ -27,6 +27,9 @@ const EditDeletePostButtons = ({ id }: EditDeletePostButtonsProps) => {
             variables: {
               id,
             },
+            update: (cache) => {
+              cache.evict({ id: "Post:" + id });
+            },
           });
         }}
         mx="1"

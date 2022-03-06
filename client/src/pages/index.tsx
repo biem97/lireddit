@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { useMeQuery, usePostsQuery } from "../generated/graphql";
+import { PostsQuery, useMeQuery, usePostsQuery } from "../generated/graphql";
 import Layout from "../components/Layout";
 import NextLink from "next/link";
 import {
@@ -16,19 +15,36 @@ import UpdootSection from "../components/UpdootSection";
 import EditDeletePostButtons from "../components/EditDeletePostButtons";
 
 const Index = () => {
-  const [pagination, setPagination] = useState({
-    limit: 5,
-    cursor: null as null | string,
-  });
-  const { data, loading, error } = usePostsQuery({
-    variables: pagination,
+  const { data, loading, error, fetchMore, variables } = usePostsQuery({
+    variables: {
+      limit: 15,
+      cursor: null as null | string,
+    },
+    notifyOnNetworkStatusChange: true,
   });
   const { data: meData } = useMeQuery();
 
   const handleOnClick = () => {
-    setPagination({
-      limit: pagination.limit,
-      cursor: data?.posts.posts[data.posts.posts.length - 1].createdAt || null,
+    fetchMore({
+      variables: {
+        limit: variables!.limit,
+        cursor: data?.posts.posts[data.posts.posts.length - 1].createdAt,
+      },
+      // updateQuery: (previousValue, { fetchMoreResult }) => {
+      //   if (!fetchMoreResult) return previousValue;
+
+      //   return {
+      //     __typename: "Query",
+      //     posts: {
+      //       __typename: "PaginatedPosts",
+      //       hasMore: fetchMoreResult.posts.hasMore,
+      //       posts: [
+      //         ...previousValue.posts.posts,
+      //         ...fetchMoreResult.posts.posts,
+      //       ],
+      //     },
+      //   };
+      // },
     });
   };
 
