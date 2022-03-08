@@ -1,4 +1,4 @@
-import { PostsQuery, useMeQuery, usePostsQuery } from "../generated/graphql";
+import { useMeQuery, usePostsQuery } from "../generated/graphql";
 import Layout from "../components/Layout";
 import NextLink from "next/link";
 import {

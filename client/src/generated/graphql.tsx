@@ -91,7 +91,7 @@ export type Post = {
   creator: User;
   creatorId: Scalars['Float'];
   id: Scalars['Float'];
-  points: Scalars['String'];
+  points: Scalars['Float'];
   text: Scalars['String'];
   textSnippet: Scalars['String'];
   title: Scalars['String'];
@@ -144,7 +144,7 @@ export type UsernamePasswordInput = {
   username: Scalars['String'];
 };
 
-export type PostSnippetFragment = { __typename?: 'Post', id: number, textSnippet: string, createdAt: string, updatedAt: string, title: string, text: string, points: string, voteStatus?: number | null, creator: { __typename?: 'User', id: number, username: string } };
+export type PostSnippetFragment = { __typename?: 'Post', id: number, textSnippet: string, createdAt: string, updatedAt: string, title: string, text: string, points: number, voteStatus?: number | null, creator: { __typename?: 'User', id: number, username: string } };
 
 export type RegularErrorsFragment = { __typename?: 'FieldError', field: string, message: string };
 
@@ -165,7 +165,7 @@ export type CreatePostMutationVariables = Exact<{
 }>;
 
 
-export type CreatePostMutation = { __typename?: 'Mutation', createPost: { __typename?: 'Post', id: number, creatorId: number, points: string, text: string, title: string, updatedAt: string, createdAt: string } };
+export type CreatePostMutation = { __typename?: 'Mutation', createPost: { __typename?: 'Post', id: number, creatorId: number, points: number, text: string, title: string, updatedAt: string, createdAt: string } };
 
 export type DeletePostMutationVariables = Exact<{
   id: Scalars['Int'];
@@ -228,7 +228,7 @@ export type PostQueryVariables = Exact<{
 }>;
 
 
-export type PostQuery = { __typename?: 'Query', post?: { __typename?: 'Post', id: number, textSnippet: string, createdAt: string, updatedAt: string, title: string, text: string, points: string, voteStatus?: number | null, creator: { __typename?: 'User', id: number, username: string } } | null };
+export type PostQuery = { __typename?: 'Query', post?: { __typename?: 'Post', id: number, textSnippet: string, createdAt: string, updatedAt: string, title: string, text: string, points: number, voteStatus?: number | null, creator: { __typename?: 'User', id: number, username: string } } | null };
 
 export type PostsQueryVariables = Exact<{
   limit: Scalars['Int'];
@@ -236,7 +236,7 @@ export type PostsQueryVariables = Exact<{
 }>;
 
 
-export type PostsQuery = { __typename?: 'Query', posts: { __typename?: 'PaginatedPosts', hasMore: boolean, posts: Array<{ __typename?: 'Post', id: number, textSnippet: string, createdAt: string, updatedAt: string, title: string, text: string, points: string, voteStatus?: number | null, creator: { __typename?: 'User', id: number, username: string } }> } };
+export type PostsQuery = { __typename?: 'Query', posts: { __typename?: 'PaginatedPosts', hasMore: boolean, posts: Array<{ __typename?: 'Post', id: number, textSnippet: string, createdAt: string, updatedAt: string, title: string, text: string, points: number, voteStatus?: number | null, creator: { __typename?: 'User', id: number, username: string } }> } };
 
 export const PostSnippetFragmentDoc = gql`
     fragment PostSnippet on Post {

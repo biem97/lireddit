@@ -1,0 +1,121 @@
+# docker-compose version
+version: "2.3"
+
+volumes:
+  postgres-volume: # allow db data to survive reboots
+  redis-volume: # allow redis cache to survive reboots
+
+# Ensure containers may communicate only with the containers
+# they need to.
+networks:
+  frontend: # nginx <--> web_app
+    ipam:
+      config:
+        - subnet: 172.31.0.0/24
+  backend: # nginx <--> graph-bridge
+    ipam:
+      config:
+        - subnet: 172.31.1.0/24
+  database: # graph-bridge <--> database
+    ipam:
+      config:
+        - subnet: 172.31.2.0/24
+  redis: # graph-bridge <--> redis
+    ipam:
+      config:
+        - subnet: 172.31.3.0/24
+
+services:
+  redis:
+    image: bitnami/redis:6.2
+    restart: always
+    networks:
+      - redis
+    volumes:
+      - redis-volume:/bitnami/redis/data
+    environment:
+      REDIS_PASSWORD: &redis_password qwerty123
+
+  mongodb:
+    build: ./database
+    restart: always
+    command: mongod --quiet # --logpath /dev/null
+    networks:
+      - database
+    environment:
+      CAPPED_COLLECTION_SIZE: 1000000000 # 1gb - Maximum size of the capped collections in bytes
+      MONGO_INITDB_DATABASE: &db_name poa
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: qwerty123
+      DB_USER: &db_user graphbridge
+      DB_PASSWORD: &db_password qwerty123
+      DB_NAME: *db_name
+    volumes:
+      - mongodb-volume:/data/db
+
+  graph-bridge:
+    build:
+      context: ./graph-bridge # where to look
+      dockerfile: Dockerfile.dev # what dockerfile
+    networks:
+      - backend
+      - database
+      - redis
+    volumes:
+      - ./graph-bridge:/app
+    environment:
+      DB_NAME: *db_name # this should match the mongodb DB_NAME provides
+      DB_USER: *db_user # this should match the creds the mongodb provides
+      DB_PASSWORD: *db_password # this should match the creds the mongodb provides
+      REDIS_PASSWORD: *redis_password # this should match the creds redis provides
+      ADMIN_PASSWORD: qwerty123! # this will be the admin password for the web
+      NODE_ENV: &global_env development
+      PORT: 4000
+      ROS_HOST: &ros_host "10.210.2.10" # Change this to the IP of the machine you want to connect to
+      ROS_PORT: 9090
+
+      # - Set the IP address of your dev box to use the IP address (e.g. https://YOUR_IP) instead of
+      # the poa.plusonerobotics.local url.
+      # - Defaulting to "127.0.0.1" so you don't have to change it every time and you don't have
+      # to worry about accidentally committing it.
+      # - If you want to use the url though, just comment out this line and the REACT_APP_API_ENDPOINT
+      # line in the web-app env vars.
+      HOST: &graphbridge_ip "127.0.0.1"
+    depends_on:
+      - mongodb
+      - redis
+
+  web-app:
+    stdin_open: true # needed to allow react-scripts to watch for changes
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./web-app
+    networks:
+      - frontend
+    volumes:
+      - ./web-app:/app/
+    environment:
+      NODE_ENV: *global_env
+      PORT: 5000
+      REACT_APP_API_ENDPOINT: *graphbridge_ip
+
+  nginx:
+    restart: always
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile.dev
+    volumes:
+      - certs-volume:/etc/ssl/keys
+    environment:
+      VIDEO_STREAM_HOST: *ros_host
+      VIDEO_STREAM_PORT: 9091
+      NGINX_ENV: *global_env
+      DOMAIN: poa.plusonerobotics.local
+    networks:
+      - frontend
+      - backend
+    ports:
+      - 443:443
+    depends_on:
+      - graph-bridge
+      - web-app

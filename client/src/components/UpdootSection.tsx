@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { ChevronUpIcon, ChevronDownIcon } from "@chakra-ui/icons";
-import { Flex, IconButton, Text } from "@chakra-ui/react";
+import { Flex, IconButton } from "@chakra-ui/react";
 import {
   PostSnippetFragment,
   useVoteMutation,
